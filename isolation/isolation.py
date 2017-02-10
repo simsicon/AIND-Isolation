@@ -13,6 +13,7 @@ import timeit
 from copy import deepcopy
 from copy import copy
 
+import pdb
 
 TIME_LIMIT_MILLIS = 200
 

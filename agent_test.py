@@ -25,6 +25,8 @@ from multiprocessing import TimeoutError
 from queue import Empty as QueueEmptyError
 from importlib import reload
 
+import pdb
+
 WRONG_MOVE = """
 The {} function failed because it returned a non-optimal move at search depth {}.
 Valid choices: {}
@@ -243,7 +245,7 @@ class Project1Test(unittest.TestCase):
         self.assertIsInstance(game_agent.custom_score(game, player1), float,
             "The heuristic function should return a floating point")
 
-    timeout(5)
+    @timeout(5)
     # @unittest.skip("Skip simple minimax test.")  # Uncomment this line to skip test
     def test_minimax_interface(self):
         """ Test CustomPlayer.minimax interface with simple input """
@@ -274,7 +276,7 @@ class Project1Test(unittest.TestCase):
                              "point value approximating the score for the " +
                              "branch being searched."))
 
-    timeout(5)
+    @timeout(5)
     # @unittest.skip("Skip alphabeta test.")  # Uncomment this line to skip test
     def test_alphabeta_interface(self):
         """ Test CustomPlayer.alphabeta interface with simple input """
@@ -305,7 +307,7 @@ class Project1Test(unittest.TestCase):
                              "point value approximating the score for the " +
                              "branch being searched."))
 
-    @timeout(5)
+    # @timeout(5)
     # @unittest.skip("Skip get_move test.")  # Uncomment this line to skip test
     def test_get_move_interface(self):
         """ Test CustomPlayer.get_move interface with simple input """
@@ -323,6 +325,7 @@ class Project1Test(unittest.TestCase):
 
         # Test that get_move returns a legal choice on an empty game board
         board = isolation.Board(agentUT, 'null_agent', w, h)
+
         legal_moves = board.get_legal_moves()
         move = agentUT.get_move(board, legal_moves, lambda: 99)
         self.assertIn(move, legal_moves,
@@ -477,7 +480,7 @@ class Project1Test(unittest.TestCase):
                 method, test_depth, first_branch, move))
 
 
-    @timeout(20)
+    # @timeout(20)
     # @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
     def test_get_move(self):
         """ Test iterative deepening in CustomPlayer.get_move by placing an
