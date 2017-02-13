@@ -33,6 +33,8 @@ from sample_players import improved_score
 from game_agent import CustomPlayer
 from game_agent import custom_score
 
+import pdb
+
 NUM_MATCHES = 5  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
 

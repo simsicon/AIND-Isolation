@@ -38,6 +38,12 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
     my_moves = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_moves = len(game.get_legal_moves(opponent))
@@ -199,8 +205,12 @@ class CustomPlayer:
             if level == depth:
                 return (self.score(state, _active_player), None)
 
+            _legal_moves = state.get_legal_moves()
+            if len(_legal_moves) == 0:
+                return (float("-inf"), None)
+
             _scores = []
-            for move in state.get_legal_moves():
+            for move in _legal_moves:
                 next_state = state.forecast_move(move)
                 child_score, _ = search_helper(next_state.copy(), level + 1, not is_max_value)
                 _scores.append((child_score, move))
@@ -262,8 +272,12 @@ class CustomPlayer:
             if level == depth:
                 return (self.score(state, _active_player), None)
 
+            _legal_moves = state.get_legal_moves()
+            if len(_legal_moves) == 0:
+                return (float("-inf"), None)
+
             _scores = []
-            for move in state.get_legal_moves():
+            for move in _legal_moves:
                 next_state = state.forecast_move(move)
                 child_score, _ = search_helper(next_state.copy(), level + 1,
                                                cur_alpha, cur_beta, not is_max_value)
