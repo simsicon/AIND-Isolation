@@ -8,6 +8,7 @@ relative strength using tournament.py and include the results in your report.
 """
 import random
 import pdb
+import math
 
 
 class Timeout(Exception):
@@ -48,7 +49,7 @@ def custom_score(game, player):
     opponent = game.get_opponent(player)
     opponent_moves = len(game.get_legal_moves(opponent))
 
-    return float(my_moves - opponent_moves)
+    return math.exp(my_moves - 1.2 * opponent_moves)
 
 
 class CustomPlayer:
@@ -136,14 +137,14 @@ class CustomPlayer:
             return (-1, -1)
 
         # Occupy the center as possible
-        if ((game.height == game.width)
-            and (game.height % 2 == 1)
-            and (game.width % 2 == 1)):
-
-            center_cell = (game.height % 2 + 1, game.width % 2 + 1)
-            if (center_cell in legal_moves and
-                game.__board_state__[center_cell[0]][center_cell[1]] == 0):
-                return center_cell
+        # if ((game.height == game.width)
+        #     and (game.height % 2 == 1)
+        #     and (game.width % 2 == 1)):
+        #
+        #     center_cell = (game.height // 2 + 1, game.width // 2 + 1)
+        #     if (center_cell in legal_moves and
+        #         game.__board_state__[center_cell[0]][center_cell[1]] == 0):
+        #         return center_cell
 
         def rotate_90(origin_state):
             _h, _w = len(origin_state), len(origin_state[0])
@@ -164,7 +165,6 @@ class CustomPlayer:
             return origin_state, state_90, state_180, state_270
 
         def search_method_helper(search_depth):
-            tuples = []
             if self.method == 'minimax':
                 _score, _move = self.minimax(game, search_depth)
             elif self.method == 'alphabeta':
@@ -187,9 +187,7 @@ class CustomPlayer:
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            if _best_move is None:
-                _best_move = random.choice(legal_moves)
-
+            return _best_move
         # Return the best move from the last completed search iteration
         return _best_move
 
@@ -227,29 +225,20 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        _active_player = game.active_player
+        _legal_moves = game.get_legal_moves()
+        if len(_legal_moves) == 0 or depth == 0:
+            return (self.score(game, self), None)
 
-        def search_helper(state, level, is_max_value):
-            if level == depth:
-                return (self.score(state, _active_player), None)
+        _scores = []
+        for move in _legal_moves:
+            next_state = game.forecast_move(move)
+            child_score, _ = self.minimax(next_state, depth - 1, not maximizing_player)
+            _scores.append((child_score, move))
 
-            _legal_moves = state.get_legal_moves()
-            if len(_legal_moves) == 0:
-                return (float("-inf"), None)
-
-            _scores = []
-            for move in _legal_moves:
-                next_state = state.forecast_move(move)
-                child_score, _ = search_helper(next_state.copy(), level + 1, not is_max_value)
-                _scores.append((child_score, move))
-
-            if is_max_value:
-                return max(_scores, key= lambda x : x[0])
-            else:
-                return min(_scores, key= lambda x : x[0])
-
-        _score, _best_move = search_helper(game, 0, maximizing_player)
-        return _score, _best_move
+        if maximizing_player:
+            return max(_scores, key= lambda x : x[0])
+        else:
+            return min(_scores, key= lambda x : x[0])
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
@@ -292,41 +281,30 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        _active_player = game.active_player
-        def search_helper(state, level,
-                          cur_alpha=float("-inf"),
-                          cur_beta=float("inf"),
-                          is_max_value=True):
-            if level == depth:
-                return (self.score(state, _active_player), None)
+        _legal_moves = game.get_legal_moves()
+        if len(_legal_moves) == 0 or depth == 0:
+            return  (self.score(game, self), None)
 
-            _legal_moves = state.get_legal_moves()
-            if len(_legal_moves) == 0:
-                return (float("-inf"), None)
+        _scores = []
+        for move in _legal_moves:
+            next_state = game.forecast_move(move)
+            child_score, _ = self.alphabeta(next_state, depth - 1,
+                                            alpha, beta, not maximizing_player)
 
-            _scores = []
-            for move in _legal_moves:
-                next_state = state.forecast_move(move)
-                child_score, _ = search_helper(next_state.copy(), level + 1,
-                                               cur_alpha, cur_beta, not is_max_value)
+            _scores.append((child_score, move))
 
-                _scores.append((child_score, move))
+            # prune
+            if ((maximizing_player and child_score >= beta) or
+               (not maximizing_player and child_score <= alpha)):
+                break
 
-                # prune
-                if ((is_max_value and child_score >= cur_beta) or
-                   (not is_max_value and child_score <= cur_alpha)):
-                    break
+            # update current alpha and beta
+            if maximizing_player and child_score > alpha:
+                alpha = child_score
+            elif not maximizing_player and child_score < beta:
+                beta = child_score
 
-                # update current alpha and beta
-                if is_max_value and child_score > cur_alpha:
-                    cur_alpha = child_score
-                elif not is_max_value and child_score < cur_beta:
-                    cur_beta = child_score
-
-            if is_max_value:
-                return max(_scores, key= lambda x : x[0])
-            else:
-                return min(_scores, key= lambda x : x[0])
-
-        _score, _best_move = search_helper(game, 0, alpha, beta, maximizing_player)
-        return _score, _best_move
+        if maximizing_player:
+            return max(_scores, key= lambda x : x[0])
+        else:
+            return min(_scores, key= lambda x : x[0])

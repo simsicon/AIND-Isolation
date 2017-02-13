@@ -307,7 +307,7 @@ class Project1Test(unittest.TestCase):
                              "point value approximating the score for the " +
                              "branch being searched."))
 
-    # @timeout(5)
+    @timeout(5)
     # @unittest.skip("Skip get_move test.")  # Uncomment this line to skip test
     def test_get_move_interface(self):
         """ Test CustomPlayer.get_move interface with simple input """
@@ -480,7 +480,7 @@ class Project1Test(unittest.TestCase):
                 method, test_depth, first_branch, move))
 
 
-    # @timeout(20)
+    @timeout(20)
     # @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
     def test_get_move(self):
         """ Test iterative deepening in CustomPlayer.get_move by placing an
