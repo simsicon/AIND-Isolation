@@ -89,7 +89,6 @@ class CustomPlayer:
         self.method = method
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
-        self.cache = {}
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
@@ -178,23 +177,13 @@ class CustomPlayer:
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
-            if game.move_count <= 3:
-                _states = rotate(game)
-                _state_keys = [str(_state) for _state in _states]
-                for _state_key in _state_keys:
-                    if _state_key in self.cache:
-                        _best_move = self.cache[_state_key]
-                        break
-
-            if _best_move is None:
-                if self.iterative:
-                    _depth = 1
-                    while True:
-                        _, _best_move = search_method_helper(_depth)
-                        _depth += 1
-                else:
-                    _, _best_move = search_method_helper(self.search_depth)
-                self.cache[str(game.__board_state__)] = _best_move
+            if self.iterative:
+                _depth = 1
+                while True:
+                    _, _best_move = search_method_helper(_depth)
+                    _depth += 1
+            else:
+                _, _best_move = search_method_helper(self.search_depth)
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
