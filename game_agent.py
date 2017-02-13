@@ -135,6 +135,14 @@ class CustomPlayer:
         if len(legal_moves) == 0:
             return (-1, -1)
 
+        if ((game.height == game.width)
+            and (game.height % 2 == 1)
+            and (game.width % 2 == 1)):
+
+            center_cell = (game.height % 2 + 1, game.width % 2 + 1)
+            if game.__board_state__[center_cell[0]][center_cell[1]] == 0:
+                return center_cell
+
         def search_method_helper(search_depth):
             tuples = []
             if self.method == 'minimax':
