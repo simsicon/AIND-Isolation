@@ -142,9 +142,9 @@ def custom_score_3(game, player):
     _last_move = game.__last_player_move__[player]
 
     for i in range(_last_move[0] - 2, _last_move[0] + 2, 1):
-        if i > 0:
+        if i > 0 and i < game.height:
             for j in range(_last_move[1] - 2, _last_move[1] + 2, 1):
-                if j > 0:
+                if j > 0 and j < game.width:
                     if game.__board_state__[i][j] == game.BLANK:
                         local_blanks_count += 1
 
