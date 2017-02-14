@@ -31,7 +31,7 @@ from sample_players import null_score
 from sample_players import open_move_score
 from sample_players import improved_score
 from game_agent import CustomPlayer
-from game_agent import custom_score, custom_score_1, custom_score_2, custom_score_3
+from game_agent import custom_score, custom_score_1, custom_score_2, custom_score_3, custom_score_4
 
 import pdb
 

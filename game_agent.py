@@ -200,7 +200,7 @@ def custom_score_4(game, player):
     opponent = game.get_opponent(player)
     opponent_moves = len(game.get_legal_moves(opponent))
 
-    return 0.8 * blanks_ratio + 1.0 * my_moves - 1.0 * (opponent_moves ** 2)
+    return 0.8 * blanks_ratio + 1.0 * ((my_moves - opponent_moves) ** 2)
 
 
 class CustomPlayer:
