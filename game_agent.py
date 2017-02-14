@@ -38,9 +38,9 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return custom_score_1(game, player, 1.2)
+    return custom_score_1(game, player)
 
-def custom_score_1(game, player, weight=1.0):
+def custom_score_1(game, player, weight=1.2):
     """Calculate the score by rewarding the gap between my moves and opponent moves
     with exponential.
 
@@ -75,9 +75,9 @@ def custom_score_1(game, player, weight=1.0):
 
     return math.exp(my_moves - weight * opponent_moves)
 
-def custom_score_2(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
+def custom_score_2(game, player, weight=1.2):
+    """Calculate the score by rewarding the gap between my moves and opponent moves
+    with polynomial.
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
@@ -107,12 +107,11 @@ def custom_score_2(game, player):
     my_moves = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_moves = len(game.get_legal_moves(opponent))
-
-    return math.exp(my_moves - 1.2 * opponent_moves)
+    x = my_moves - weight * opponent_moves
+    return x * x
 
 def custom_score_3(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
+    """Calculate the score by the density of blank spaces.
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
@@ -139,11 +138,19 @@ def custom_score_3(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    my_moves = len(game.get_legal_moves(player))
-    opponent = game.get_opponent(player)
-    opponent_moves = len(game.get_legal_moves(opponent))
+    local_blanks_count = 0
+    _last_move = game.__last_player_move__[player]
 
-    return math.exp(my_moves - 1.2 * opponent_moves)
+    for i in range(_last_move[0] - 2, _last_move[0] + 2, 1):
+        if i > 0:
+            for j in range(_last_move[1] - 2, _last_move[1] + 2, 1):
+                if j > 0:
+                    if game.__board_state__[i][j] == game.BLANK:
+                        local_blanks_count += 1
+
+    global_blanks_count = len(game.get_blank_spaces())
+
+    return local_blanks_count / global_blanks_count
 
 
 class CustomPlayer:
