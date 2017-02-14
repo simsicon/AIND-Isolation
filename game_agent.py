@@ -92,6 +92,9 @@ def custom_score_2(game, player, weight=1.2):
         A player instance in the current game (i.e., an object corresponding to
         one of the player objects `game.__player_1__` or `game.__player_2__`.)
 
+    weight : float
+        A float number to weight how much opponent's moves should be valued.
+
     Returns
     -------
     float
@@ -151,6 +154,53 @@ def custom_score_3(game, player):
     global_blanks_count = len(game.get_blank_spaces())
 
     return local_blanks_count / global_blanks_count
+
+def custom_score_4(game, player):
+    """Calculate the score by put every kind of eval fn together.
+
+    Note: this function should be called from within a Player instance as
+    `self.score()` -- you should not need to call this function directly.
+
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    local_blanks_count = 0
+    _last_move = game.__last_player_move__[player]
+
+    for i in range(_last_move[0] - 2, _last_move[0] + 2, 1):
+        if i > 0 and i < game.height:
+            for j in range(_last_move[1] - 2, _last_move[1] + 2, 1):
+                if j > 0 and j < game.width:
+                    if game.__board_state__[i][j] == game.BLANK:
+                        local_blanks_count += 1
+
+    global_blanks_count = len(game.get_blank_spaces())
+    blanks_ratio = local_blanks_count / global_blanks_count
+
+    my_moves = len(game.get_legal_moves(player))
+    opponent = game.get_opponent(player)
+    opponent_moves = len(game.get_legal_moves(opponent))
+
+    return 0.8 * blanks_ratio + 1.0 * my_moves - 1.0 * (opponent_moves ** 2)
 
 
 class CustomPlayer:
