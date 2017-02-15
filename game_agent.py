@@ -199,7 +199,7 @@ def custom_score_4(game, player):
 
     part_b = math.exp(my_moves - 1.2 * opponent_moves)
 
-    return 0.4 * part_a + 0.6 * part_b
+    return 0.3 * part_a + 0.7 * part_b
 
 
 class CustomPlayer:
