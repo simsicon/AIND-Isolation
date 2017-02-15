@@ -35,7 +35,7 @@ from game_agent import custom_score, custom_score_1, custom_score_2, custom_scor
 
 import pdb
 
-NUM_MATCHES = 50  # number of matches against each opponent
+NUM_MATCHES = 5  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
 
 TIMEOUT_WARNING = "One or more agents lost a match this round due to " + \
@@ -145,7 +145,7 @@ def main():
     score_3_agent = Agent(CustomPlayer(score_fn=custom_score_3, **CUSTOM_ARGS), "Student3")
     score_4_agent = Agent(CustomPlayer(score_fn=custom_score_4, **CUSTOM_ARGS), "Student4")
 
-    test_agents = [score_1_agent, score_2_agent, score_3_agent, score_4_agent]
+    test_agents = [for _ in range(10)]
 
     print(DESCRIPTION)
     for agentUT in test_agents:
