@@ -151,9 +151,7 @@ def custom_score_3(game, player):
                     if game.__board_state__[i][j] == game.BLANK:
                         local_blanks_count += 1
 
-    global_blanks_count = len(game.get_blank_spaces())
-
-    return local_blanks_count / global_blanks_count
+    return math.exp(local_blanks_count)
 
 def custom_score_4(game, player):
     """Calculate the score by put every kind of eval fn together.
@@ -193,14 +191,15 @@ def custom_score_4(game, player):
                     if game.__board_state__[i][j] == game.BLANK:
                         local_blanks_count += 1
 
-    global_blanks_count = len(game.get_blank_spaces())
-    blanks_ratio = local_blanks_count / global_blanks_count
+    part_a = math.exp(local_blanks_count)
 
     my_moves = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_moves = len(game.get_legal_moves(opponent))
 
-    return 0.8 * blanks_ratio + 1.0 * ((my_moves - 1.2 * opponent_moves) ** 2)
+    part_b = math.exp(my_moves - 1.2 * opponent_moves)
+
+    return 0.4 * part_a + 0.6 * part_b
 
 
 class CustomPlayer:
